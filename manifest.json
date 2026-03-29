@@ -1,0 +1,20 @@
+{
+  "name": "Entrenador de Pizzas",
+  "short_name": "PizzasApp",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7e4d2d",
+  "icons": [
+    {
+      "src": "logo-pizzeria-01.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo-pizzeria-01.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

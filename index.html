@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Entrenador de Pizzas</title>
+
+<style>
+
+body {
+  margin: 0;
+  font-family: Arial;
+  display: flex;
+
+  /* varias capas de fondo */
+  background-image: 
+    url("fondo-secundario.png"),   /* 👈 esta va encima, abajo izquierda */
+    url("pizzeria-popular-general-1024x682.jpg"); /* fondo original */
+
+  background-position: 
+    left bottom,  /* posición de la imagen secundaria */
+    center;       /* posición del fondo original */
+  
+  background-size: 
+    150px auto,   /* tamaño de la imagen secundaria */
+    cover;        /* tamaño del fondo original */
+  
+  background-repeat: 
+    no-repeat,    /* la secundaria no se repite */
+    no-repeat;    /* la original tampoco */
+
+  background-attachment: fixed; /* opcional: que quede fija */
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+
+  display: flex;
+  justify-content: center;
+
+  padding: 10px 0;
+  z-index: 1000;
+}
+
+.header img {
+  height: 95px; /* ajustá el tamaño */
+  object-fit: contain;
+}
+
+.main {
+  margin-top: 80px;
+}
+
+.stats, .historial {
+  padding: 10px;
+  height: calc(100vh - 25px);
+
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  border: 2px solid rgba(247, 247, 247, 0.4);
+
+  position: relative;
+  z-index: 1100;
+}
+
+.stats h3,
+.historial h3 {
+  color: #7e4d2d;
+}
+
+/* 🎯 CENTRO */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* 👈 importante */
+  z-index: 1;
+}
+
+.card {
+  text-align: center;
+  position: relative; /* 👈 clave */
+}
+
+/* 🧾 TICKET */
+.ticket {
+  background: white;
+  width: 260px;
+  padding: 10px;
+  font-family: "Courier New", monospace;
+  border: 1px dashed black;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.titulo {
+  text-align: center;
+  font-weight: bold;
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 12px;
+}
+
+.info p {
+  margin: 2px 0;
+  font-size: 12px;
+  text-align: left;
+}
+
+.centro {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.pedido {
+  font-size: 16px;
+}
+
+/* INPUT */
+input {
+  padding: 10px;
+  width: 285px;
+  margin-top: 10px;
+  box-sizing: border-box;
+  border-radius: 15px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* 🎬 ANIMACIÓN SALIDA (a la derecha) */
+.ticket.salida {
+  animation: moverDerecha 0.6s forwards;
+}
+
+@keyframes moverDerecha {
+  to {
+    transform: translateX(300px);
+    opacity: 0;
+  }
+}
+
+/* 🎬 ANIMACIÓN ENTRADA (desde abajo) */
+.ticket.entrada {
+  animation: subir 0.5s ease-out;
+}
+
+@keyframes subir {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes moverIzquierda {
+  to {
+    transform: translateX(-300px);
+    opacity: 0;
+  }
+}
+
+.ingredientes-box.salida {
+  animation: moverIzquierda 0.3s forwards;
+}
+
+.zona-juego {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.ingredientes-box.entrada {
+  animation: subir 0.4s ease-out;
+}
+
+.ingredientes-box {
+  transform: translateY(0);
+  opacity: 1;
+}
+/* 📦 caja de ingredientes */
+.ingredientes-box {
+  position: absolute;
+  right: 100%; /* 👈 lo pone a la izquierda del ticket */
+  margin-right: 20px;
+  
+
+  width: 200px;
+  background: white;
+  border: none;
+box-shadow: 0 0 5px rgba(0,0,0,0.2);
+border-radius: 15px;
+  padding: 10px;
+  font-family: "Courier New", monospace;
+}
+
+/* lista */
+#lista li {
+  margin: 3px 0;
+}
+
+button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#btnHorno {
+  background: orange;
+  color: white;
+}
+
+#btnSalida {
+  background: green;
+  color: white;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-contenido {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  width: 250px;
+  text-align: center;
+  position: relative;
+  animation: aparecerModal 0.3s ease;
+}
+
+#cerrarModal {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+@keyframes aparecerModal {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <img src="logo-pizzeria-01.png" alt="Pizzería">
+</div>
+
+<div id="modalError" class="modal">
+  <div class="modal-contenido">
+    <span id="cerrarModal">&times;</span>
+    <p id="textoModal"></p>
+  </div>
+</div>
+
+<!-- IZQUIERDA -->
+<div class="stats">
+  <h3>Estadisticas</h3>
+  <p id="statPizzas"></p>
+  <p id="statErrores"></p>
+  <p id="statPerfectas"></p>
+  <p id="statMalas"></p>
+</div>
+
+<!-- CENTRO -->
+<div class="main">
+     <div class="zona-juego">
+
+  <!-- 🟢 INGREDIENTES -->
+  <!-- 🧾 TICKET + INPUT -->
+  <div class="card">
+    <div class="ingredientes-box">
+    <ul id="lista"></ul>
+  </div>
+
+    <div class="ticket">
+      <p class="titulo">PEDIDOS HORNO</p>
+
+      <div class="top">
+        <span id="nro"></span>
+        <span id="fecha"></span>
+      </div>
+
+      <div class="info">
+        <p id="memoria"></p>
+        <p id="zona"></p>
+        <p id="comensales"></p>
+        <p id="camarero"></p>
+        <p>CONSUMIDOR FINAL</p>
+      </div>
+
+      <hr>
+
+      <p class="centro">SEGUNDOS</p>
+      <p class="pedido" id="ticketNombre"></p>
+
+      <hr>
+    </div>
+
+    <input id="inputIngrediente" placeholder="Ingrediente + Enter">
+
+    <div style="margin-top:10px; display:flex; gap:10px;">
+      <button id="btnHorno">🔥 Horno</button>
+      <button id="btnSalida">📦 Salida</button>
+    </div>
+  </div>
+
+</div>
+
+  </div>
+</div>
+
+<!-- DERECHA -->
+<div class="historial">
+  <h3>Tickets hechos</h3>
+  <ul id="historial"></ul>
+</div>
+
+<script>
+// 📦 Pizzas
+const pizzas = {
+  "Napolitana": {
+    antes: ["masa", "salsa", "muzza", "tomate", "ajo"],
+    despues: ["oregano"],
+    sinPosibles: ["salsa", "ajo", "oregano"]
+  },
+  "Muzzarella": {
+    antes: ["masa", "salsa", "muzza"],
+    despues: ["oregano"],
+    sinPosibles: ["salsa", "oregano"]
+  },
+  "Jamon Cocido": {
+    antes: ["masa", "salsa", "muzza", "jamon cocido"],
+    despues: [],
+    sinPosibles:[]
+  },
+  "Especial": {
+    antes: ["masa", "salsa", "muzza", "morrones", "jamon cocido" , "aceitunas", "huevo"],
+    despues: [],
+    sinPosibles: []
+  }
+};
+
+// 📊 Stats
+let errores = 0;
+let pizzasHechas = 0;
+let pizzasPerfectas = 0;
+let pizzasMalas = 0;
+
+// 🧠 Estado
+let fase = "antes"; // "antes" | "horno" | "despues"
+let pizzaActual;
+let ingredientesUsuario = [];
+let indiceCorrecto = 0;
+let erroresPizzaActual = 0;
+let nombre;
+let mesaActual = "";
+let mods = [];
+
+// 🎲 Nueva pizza
+function nuevaPizza() {
+  let nombres = Object.keys(pizzas);
+  nombre = nombres[Math.floor(Math.random() * nombres.length)];
+  pizzaActual = pizzas[nombre];
+
+  ingredientesUsuario = [];
+  fase = "antes";
+  indiceCorrecto = 0;
+  erroresPizzaActual = 0;
+
+  document.getElementById("lista").innerHTML = "";
+
+  // 👇 PRIMERO mods
+  mods = [];
+
+  let listaSin = pizzaActual.sinPosibles || [];
+
+  if (Math.random() < 0.3 && listaSin.length > 0) {
+    let ingredienteRandom =
+      listaSin[Math.floor(Math.random() * listaSin.length)];
+
+    mods.push({ tipo: "sin", ingrediente: ingredienteRandom });
+  }
+
+  // 👇 DESPUÉS generar ticket
+  generarTicketVisual();
+}
+
+// 🧾 Ticket visual
+function generarTicketVisual() {
+  let numero = Math.floor(Math.random() * 900000 + 100000);
+  let fecha = new Date();
+
+  // 🎲 Zona y número
+  let zonas = ["A", "B", "C"];
+  let zona = zonas[Math.floor(Math.random() * zonas.length)];
+  let numeroZona = Math.floor(Math.random() * 15) + 1;
+  mesaActual = zona + numeroZona;
+
+  // 👥 Comensales (2 a 8)
+  let comensales = Math.floor(Math.random() * 7) + 2;
+
+  // 🧑‍🍳 Camareros
+  let camareros = ["Mayra", "Juan", "Lucas"];
+  let camarero = camareros[Math.floor(Math.random() * camareros.length)];
+
+  // 🧾 Ticket
+  document.getElementById("nro").innerText = "Nro.: " + numero;
+  document.getElementById("fecha").innerText =
+    fecha.toLocaleDateString() + " " + fecha.toLocaleTimeString();
+
+  let texto = "1 x " + nombre.toUpperCase();
+
+    // 👇 agregar mods debajo
+    if (mods.length > 0) {
+      let textoMods = mods.map(m => {
+        if (m.tipo === "sin") {
+          return "SIN " + m.ingrediente.toUpperCase();
+        }
+      }).join("\n");
+
+      texto += "\n" + textoMods;
+    }
+
+    document.getElementById("ticketNombre").innerText = texto;
+
+  document.getElementById("memoria").innerText = `Memoria: ${zona}${numeroZona}`;
+  document.getElementById("zona").innerText = `Zona: ZONA ${zona}`;
+
+  document.getElementById("comensales").innerText = `Comensales: ${comensales}`;
+  document.getElementById("camarero").innerText = `Camarero: ${camarero}`;
+}
+
+// ✍️ INPUT
+document.getElementById("inputIngrediente").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    let valor = this.value.toLowerCase().trim();
+
+    if (valor !== "") {
+      let li = document.createElement("li");
+
+      let listaCorrecta = fase === "antes" ? pizzaActual.antes : pizzaActual.despues;
+      
+            // quitar ingredientes prohibidos
+      listaCorrecta = listaCorrecta.filter(ing => {
+        return !mods.some(m => 
+          m.tipo === "sin" && normalizar(m.ingrediente) === normalizar(ing)
+        );
+      });
+      // ❌ validar "SIN"
+      let modSin = mods.find(m => 
+        m.tipo === "sin" && normalizar(m.ingrediente) === normalizar(valor)
+      );
+
+      if (modSin) {
+        li.innerText = `❌ Sin "${capitalizar(valor)}"`;
+        errores++;
+        erroresPizzaActual++;
+
+        ingredientesUsuario.push(valor);
+        document.getElementById("lista").appendChild(li);
+        this.value = "";
+        actualizarStats();
+        return;
+      }
+
+      if (!listaCorrecta.map(normalizar).includes(normalizar(valor))) {
+        li.innerText = `❌ ${capitalizar(valor)}`;
+        errores++;
+        erroresPizzaActual++;
+      }
+      else if (normalizar(valor) !== normalizar(listaCorrecta[indiceCorrecto])) {
+        li.innerText = `❌ ${capitalizar(valor)}`;
+        errores++;
+        erroresPizzaActual++;
+      }
+      else {
+        li.innerText = `✔️ ${capitalizar(valor)}`;
+        indiceCorrecto++;
+      }
+
+      ingredientesUsuario.push(valor);
+      document.getElementById("lista").appendChild(li);
+      this.value = "";
+
+      actualizarStats();
+    }
+  }
+});
+// 🏁 FINAL
+
+function mostrarError(mensaje) {
+  const modal = document.getElementById("modalError");
+  const texto = document.getElementById("textoModal");
+
+  texto.innerText = mensaje;
+  modal.style.display = "flex";
+}
+
+// cerrar con la X
+document.getElementById("cerrarModal").onclick = () => {
+  document.getElementById("modalError").style.display = "none";
+};
+
+// cerrar haciendo click afuera
+window.onclick = (e) => {
+  const modal = document.getElementById("modalError");
+  if (e.target === modal) {
+    modal.style.display = "none";
+  }
+};
+
+// 🏁 FINAL
+function finalizarPizza() {
+  let historial = document.getElementById("historial");
+  let ticket = document.querySelector(".ticket");
+  let ingredientesBox = document.querySelector(".ingredientes-box");
+
+  // Agregar al historial
+  let li = document.createElement("li");
+  if (erroresPizzaActual === 0) {
+    pizzasPerfectas++;
+    li.innerText = `✔️ ${nombre} - ${mesaActual}`;
+  } else {
+    pizzasMalas++;
+    li.innerText = `❌ ${nombre} - ${mesaActual}`;
+  }
+  historial.prepend(li);
+
+  pizzasHechas++;
+  actualizarStats();
+
+  // 🔥 Animación de salida
+  ticket.classList.remove("entrada");
+  ticket.classList.add("salida");
+  ingredientesBox.classList.remove("entrada");
+  ingredientesBox.classList.add("salida");
+
+  // ⏱ Esperar la duración de la animación de salida
+  setTimeout(() => {
+    // limpiar clases de salida
+    ticket.classList.remove("salida");
+    ingredientesBox.classList.remove("salida");
+
+    // generar nueva pizza
+    nuevaPizza();
+
+    // forzar reflow
+    void ticket.offsetWidth;
+    void ingredientesBox.offsetWidth;
+
+    // volver a agregar animación de entrada
+    ticket.classList.add("entrada");
+    ingredientesBox.classList.add("entrada");
+  }, 600); // coincide con la duración de la animación de salida
+}
+// 📊 Stats
+function actualizarStats() {
+  document.getElementById("statPizzas").innerText = `🍕 Pizzas: ${pizzasHechas}`;
+  document.getElementById("statErrores").innerText = `❌ Errores: ${errores}`;
+  document.getElementById("statPerfectas").innerText = `✅ Perfectas: ${pizzasPerfectas}`;
+  document.getElementById("statMalas").innerText = `⚠️ Con errores: ${pizzasMalas}`;
+}
+
+function normalizar(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD") // separa acentos
+    .replace(/[\u0300-\u036f]/g, ""); // los elimina
+}
+
+function capitalizar(texto) {
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+// 📦 BOTÓN HORNO
+document.getElementById("btnHorno").addEventListener("click", () => {
+  if (fase !== "antes") return;
+
+  // 👇 lista real antes del horno
+  let listaAntes = pizzaActual.antes.filter(ing => {
+    return !mods.some(m => 
+      m.tipo === "sin" && normalizar(m.ingrediente) === normalizar(ing)
+    );
+  });
+
+  if (indiceCorrecto === listaAntes.length) {
+    fase = "despues";
+    indiceCorrecto = 0;
+
+    let li = document.createElement("li");
+    li.innerText = "🔥 AL HORNO";
+    document.getElementById("lista").appendChild(li);
+  } else {
+    mostrarError("¡Faltan ingredientes antes del horno!");
+  }
+});
+
+// 📦 BOTÓN SALIDA
+document.getElementById("btnSalida").addEventListener("click", () => {
+  if (fase !== "despues") return;
+
+  // 👇 lista real después de aplicar "sin"
+  let listaFinal = pizzaActual.despues.filter(ing => {
+    return !mods.some(m => 
+      m.tipo === "sin" && normalizar(m.ingrediente) === normalizar(ing)
+    );
+  });
+
+  if (indiceCorrecto === listaFinal.length) {
+
+    let li = document.createElement("li");
+    li.innerText = "📦 A SALIDA";
+    document.getElementById("lista").appendChild(li);
+
+    setTimeout(finalizarPizza, 500);
+  } else {
+    mostrarError("¡Faltan ingredientes finales!");
+  }
+});
+// 🚀 INIT
+nuevaPizza();
+actualizarStats();
+</script>
+
+</body>
+</html>
