@@ -2,11 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Entrenador de Pizzas</title>
 
-<link rel="stylesheet" href="style.css">
-  
 <style>
 
 body {
@@ -106,8 +103,7 @@ body::before {
 /* 🧾 TICKET */
 .ticket {
   background: white;
-  width: 100%;
-  max-width: 300px;
+  width: 260px;
   padding: 10px;
   font-family: "Courier New", monospace;
   border: 1px dashed black;
@@ -145,8 +141,7 @@ body::before {
 /* INPUT */
 input {
   padding: 10px;
-  width: 100%;
-  max-width: 300px;
+  width: 285px;
   margin-top: 10px;
   box-sizing: border-box;
   border-radius: 15px;
@@ -211,32 +206,21 @@ ul {
   opacity: 1;
 }
 /* 📦 caja de ingredientes */
-
-@media (max-width: 768px) {
-  .ingredientes-box {
-    position: static;
-    right: 100%; /* 👈 lo pone a la izquierda del ticket */
-    margin-right: 20px;
-    width: 100%;
-    max-width: 300px;
-    margin-bottom: 10px;
-    background: white;
-    border: none;
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
-    border-radius: 15px;
-    padding: 10px;
-    font-family: "Courier New", monospace;
-    }
-}
-
-@media (max-width: 768px) {
-
-  button {
-    width: 100%;
-  }
-
-}
+.ingredientes-box {
+  position: absolute;
+  right: 100%; /* 👈 lo pone a la izquierda del ticket */
+  margin-right: 20px;
   
+
+  width: 200px;
+  background: white;
+  border: none;
+box-shadow: 0 0 5px rgba(0,0,0,0.2);
+border-radius: 15px;
+  padding: 10px;
+  font-family: "Courier New", monospace;
+}
+
 /* lista */
 #lista li {
   margin: 3px 0;
@@ -303,34 +287,9 @@ button {
   }
 }
 
-@media (max-width: 768px) {
-
-  body {
-    flex-direction: column;
-  }
-
-  .stats, .historial {
-    width: 90%;
-    height: auto;
-    margin: 10px auto;
-  }
-
-  .main {
-    margin-top: 120px;
-  }
-
-  .zona-juego {
-    flex-direction: column;
-    align-items: center;
-  }
-
-}
-  
 </style>
 </head>
 
-  <script src="script.js"></script>
-  
 <body>
 
 <div class="header">
