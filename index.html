@@ -496,26 +496,111 @@ button {
 <script>
 // 📦 Pizzas
 const pizzas = {
-  "Napoletana": {
-    antes: ["masa", "salsa", "muzza", "tomate", "ajo"],
-    despues: ["oregano"],
-    sinPosibles: ["salsa", "ajo", "oregano"]
+  "Americana": {
+    antes: ["masa", "salsa", "muzza", "pollo", "chedar", "panceta", "cebolla morada"],
+    despues: ["verdeo"],
+    sinPosibles: ["verdeo"]
+  },
+  "Pepperoni": {
+    antes: ["masa", "salsa", "muzza"],
+    despues: ["peperoni"],
+    sinPosibles: []
+  },
+  "Especial": {
+    antes: ["masa", "salsa", "muzza", "morrones", "jamon cocido" , "aceitunas", "huevo"],
+    despues: [],
+    sinPosibles: ["aceitunas", "huevo"]
+  },
+  "Silvestre": {
+    antes: ["masa", "salsa", "champiñones", "sal", "pimienta", "oliva"],
+    despues: [],
+    sinPosibles: []
+  },
+  "4 Formaggi": {
+    antes: ["masa", "salsa", "muzza", "tybo", "roquefort", "provolone"],
+    despues: [],
+    sinPosibles: []
+  },
+  "Rucula": {
+    antes: ["masa", "muzza"],
+    despues: ["rucula", "cherrys", "provolone", "jamon crudo", "aceitunas negras", "oliva"],
+    sinPosibles: []
+  },
+  "Provolone": {
+    antes: ["masa", "salsa", "muzza", "provolone"],
+    despues: ["romero"],
+    sinPosibles: ["romero"]
+  },
+  "Bismark": {
+    antes: ["masa", "tomate", "albahaca", "muzza", "panceta", "huevo"],
+    despues: [],
+    sinPosibles: ["huevo"]
+  },
+  "Palma": {
+    antes: ["masa", "salsa", "muzza", "morrones", "palmitos"],
+    despues: ["salsa golf", "jamon crudo"],
+    sinPosibles: []
+  },
+  "Di Pollo": {
+    antes: ["masa", "salsa", "pollo"],
+    despues: ["mix de hierbas"],
+    sinPosibles: []
+  },
+  "Cancha": {
+    antes: ["masa", "salsa", "anchoas", "ajo"],
+    despues: ["aji cayena", "oregano"],
+    sinPosibles: []
   },
   "Margherita": {
     antes: ["masa", "salsa", "muzza"],
     despues: ["oregano"],
     sinPosibles: ["oregano"]
   },
+  "Fugazzeta": {
+    antes: ["masa", "muzza", "cebolla"],
+    despues: ["pimienta"],
+    sinPosibles: ["pimienta"]
+  },
+  "Napoletana": {
+    antes: ["masa", "salsa", "muzza", "tomate", "ajo"],
+    despues: ["oregano"],
+    sinPosibles: ["salsa", "ajo", "oregano"]
+  },
+  "Putanesca": {
+    antes: ["masa", "tomate", "muzza", "anchoas"],
+    despues: ["oregano"],
+    sinPosibles: []
+  },
   "Jamón Cocido": {
     antes: ["masa", "salsa", "muzza", "jamon cocido"],
     despues: [],
     sinPosibles:[]
   },
-  "Especial": {
-    antes: ["masa", "salsa", "muzza", "morrones", "jamon cocido" , "aceitunas", "huevo"],
-    despues: [],
-    sinPosibles: ["aceitunas", "huevo"]
-  }
+  "Capresse": {
+    antes: ["masa", "salsa", "muzza", "cascos", "cherrys"],
+    despues: ["burrata", "mermelada", "albahaca", "sal", "pimienta", "oliva"],
+    sinPosibles:[]
+  },
+  "Popular": {
+    antes: ["masa", "muzza", "roquefort", "champiñones", "provolone", "cascos"],
+    despues: ["verdeo"],
+    sinPosibles:["verdeo"]
+  },
+  "New York": {
+    antes: ["masa", "salsa", "muzza", "morrones", "salchichas", "peperoni"],
+    despues: ["caesar", "barbacoa"],
+    sinPosibles: []
+  },
+  "Pera": {
+    antes: ["masa", "muzza", "pera", "roquefort"],
+    despues: ["verdeo", "nueces", "miel"],
+    sinPosibles:["nueces", "miel"]
+  },
+  "Anana": {
+    antes: ["masa", "salsa", "muzza", "jamon cocido", "anana"],
+    despues: ["azucar negra"],
+    sinPosibles:[]
+  },
 };
 
 // 📊 Stats
