@@ -34,6 +34,7 @@
 }
 
 html, body {
+  overflow: hidden;
   height: 100%;
   font-size: 14px;
   margin: 0;
@@ -105,6 +106,23 @@ body::before {
   border: none;                /* quita borde por defecto */
 }
 
+#helpBtn {
+  position: fixed;
+  top: 15px;
+  left: 10px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
 .menu {
   position: fixed;
   top: 0;
@@ -122,6 +140,32 @@ body::before {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+#helpMenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* 👈 negro con transparencia */
+  backdrop-filter: blur(10px);    /* 👈 blur */
+  -webkit-backdrop-filter: blur(10px); /* 👈 soporte iPhone */
+  color: white;
+  padding: 20px;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 999;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+#helpMenu.open {
+  transform: translateX(0);
+}
+
+#helpMenu h2 {
+  margin-top: 60px;
 }
 
 .menu.abierto {
@@ -144,7 +188,7 @@ body::before {
   font-size: 11px;
   flex-shrink: 0; /* 👈 no se achica */
 
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(8px);
 
   border-radius: 15px;
@@ -312,7 +356,7 @@ ul {
 }
 
 .ingredientes-box.entrada {
-  animation: subir 0.4s ease-out;
+  animation: subir 0.5s ease-out;
 }
 
 .ingredientes-box {
@@ -321,8 +365,6 @@ ul {
   min-height: 0; /* 👈 límite de altura */
   overflow-y: auto; /* 👈 scroll vertical */
   -webkit-overflow-scrolling: touch;
-  transform: translateY(0);
-  opacity: 1;
   position: relative;
   min-width: 90px;
   width: 113px;
@@ -417,6 +459,12 @@ button {
 <div class="header">
   <img src="logo-pizzeria-01.png" alt="Pizzería">
   <button id="btnMenu">☰</button>
+</div>
+
+<div id="helpBtn">❓</div>
+<div id="helpMenu" class="closed">
+  <h2>Guía de Pizzas</h2>
+  <div id="helpContent"></div>
 </div>
 
 <div id="menuHistorial" class="menu">
@@ -649,10 +697,31 @@ function nuevaPizza() {
 }
 
 function scrollIngredientes() {
-  const lista = document.getElementById("lista");
-  const ultimo = lista.lastElementChild;
-  if (ultimo) ultimo.scrollIntoView({ behavior: "smooth" });
+  const box = document.querySelector(".ingredientes-box");
+  box.scrollTop = box.scrollHeight;
 }
+
+function generarGuia() {
+  const container = document.getElementById("helpContent");
+  container.innerHTML = "";
+
+  for (let nombre in pizzas) {
+    const pizza = pizzas[nombre];
+
+    const div = document.createElement("div");
+    div.style.marginBottom = "15px";
+
+    div.innerHTML = `
+      <strong>${nombre}</strong><br>
+      Antes: ${pizza.antes.join(", ")}<br>
+      Después: ${pizza.despues.join(", ")}
+    `;
+
+    container.appendChild(div);
+  }
+}
+
+generarGuia();
 
 // 🧾 Ticket visual
 function generarTicketVisual() {
@@ -699,12 +768,25 @@ function generarTicketVisual() {
   document.getElementById("camarero").innerText = `Camarero: ${camarero}`;
 }
 
+const helpBtn = document.getElementById("helpBtn");
+const helpMenu = document.getElementById("helpMenu");
+
+helpBtn.addEventListener("click", () => {
+  helpMenu.classList.toggle("open");
+});
+
 const btnMenu = document.getElementById("btnMenu");
 const menu = document.getElementById("menuHistorial");
 
 document.addEventListener("click", (e) => {
+  // cerrar historial
   if (!menu.contains(e.target) && e.target !== btnMenu) {
     menu.classList.remove("abierto");
+  }
+
+  // cerrar ayuda
+  if (!helpMenu.contains(e.target) && e.target !== helpBtn) {
+    helpMenu.classList.remove("open");
   }
 });
 
@@ -713,6 +795,7 @@ document.addEventListener("click", (e) => {
 // ✍️ INPUT
 document.getElementById("inputIngrediente").addEventListener("keydown", function(e) {
   if (e.key === "Enter") {
+    e.preventDefault();
     let valor = this.value.toLowerCase().trim();
 
     if (valor !== "") {
